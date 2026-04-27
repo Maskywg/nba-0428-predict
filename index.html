@@ -114,7 +114,7 @@ h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,9vw,76px);line-heigh
 .sub-btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
 .rules-box{background:rgba(29,66,138,.05);border:1px solid rgba(29,66,138,.15);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--muted);line-height:1.8}
 .rules-box strong{color:var(--text);font-size:12px}
-.modify-wrap{display:none;margin-top:14px;text-align:center}
+.modify-wrap{margin-top:14px;text-align:center}
 .modify-btn{background:linear-gradient(135deg,#1D428A,#2a5fc4);color:#fff;border:none;padding:13px 36px;border-radius:100px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:all .25s;box-shadow:0 6px 18px rgba(29,66,138,.3)}
 .modify-btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(29,66,138,.4)}
 .modify-btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
@@ -526,9 +526,26 @@ function showModifyUI(){
 }
 
 // ── 進入修改模式 ───────────────────────────────────────
-window.enterModifyMode = function(){
-  if(locked || myModified) return;
+window.enterModifyMode = async function(){
+  if(locked){ toast('⛔ 已截止，無法修改！'); return; }
+  // 若已用過修改機會
+  if(myModified){ toast('✅ 修改機會已使用過了'); return; }
+  // 確認用戶名字
+  const inputName = document.getElementById('pname').value.trim();
+  if(!inputName){ toast('⚠️ 請先在上方填入你的名字！'); return; }
+  // 即時查 Firestore 確認是否已提交
+  const checkName = myName || inputName;
+  const me = latestDB.find(e => e.name.toLowerCase() === checkName.toLowerCase());
+  if(!me){ toast('⚠️ 查無此名字的預測，請確認名字是否正確'); return; }
+  if(me.modified){ toast('✅ 修改機會已使用過了'); myModified=true; showModifyUI(); return; }
+  // 確認可以修改
+  myName = checkName;
+  hasSubmitted = true;
+  myModified = false;
   modifyMode = true;
+  // 恢復之前的選擇顯示
+  restoreMyStatus(myName);
+  // 解鎖按鈕讓用戶重選
   document.querySelectorAll('.vbtn').forEach(b => b.disabled = false);
   document.getElementById('subbtn').textContent = '✏️ 確認修改';
   document.getElementById('subbtn').disabled = false;
