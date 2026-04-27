@@ -660,6 +660,21 @@ function toast(msg){
 
 renderMatches();
 
+// ── 4/29 預測連結 ──────────────────────────────────────
+const nextEl = document.createElement('a');
+nextEl.href = 'https://maskywg.github.io/nba-0429-predict/';
+nextEl.target = '_blank';
+nextEl.className = 'prev-link';
+nextEl.style.marginTop = '24px';
+nextEl.innerHTML = `
+  <div class="prev-icon">🏀</div>
+  <div class="prev-text">
+    <div class="prev-title" style="color:#1D428A">明日 4/29 賽程預測</div>
+    <div class="prev-url">maskywg.github.io/nba-0429-predict/</div>
+  </div>
+  <div class="prev-arrow">→</div>`;
+document.getElementById('lb-section').after(nextEl);
+
 // ── 頁面載入：從 localStorage 恢復名字 ─────────────────
 const savedName = localStorage.getItem('nba0428_name');
 if(savedName){
