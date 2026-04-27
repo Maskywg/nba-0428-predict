@@ -501,6 +501,7 @@ window.submitPrediction = async function(){
   const key = myName.toLowerCase().replace(/\s+/g,'_');
   await setDoc(doc(colRef,key),{name:myName,votes:[...votes],time:Date.now(),modified:false});
   hasSubmitted = true;
+  localStorage.setItem('nba0428_name', myName); // 記住名字
   toast('✅ 預測已送出！');
   document.getElementById('poster-link').style.display='block';
   document.getElementById('subbtn').disabled = true;
@@ -641,6 +642,15 @@ function toast(msg){
 }
 
 renderMatches();
+
+// ── 頁面載入：從 localStorage 恢復名字 ─────────────────
+const savedName = localStorage.getItem('nba0428_name');
+if(savedName){
+  document.getElementById('pname').value = savedName;
+  // Firestore 資料到了之後 onSnapshot 會自動呼叫 restoreMyStatus
+  // 若資料先到則手動觸發一次
+  if(latestDB.length) restoreMyStatus(savedName);
+}
 </script>
 </body>
 </html>
