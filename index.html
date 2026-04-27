@@ -179,17 +179,32 @@ h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,9vw,76px);line-heigh
 <body>
 <div class="wrap">
 
-<!-- 昨日 4/27 冠軍公告（賽後更新） -->
+<!-- 昨日 4/27 冠軍公告 -->
 <div class="champ-banner">
   <div class="champ-top">
     <div class="champ-trophy">🏆</div>
     <div>
       <div class="champ-title">🎉 昨日 4/27 預測冠軍</div>
-      <div class="champ-date">⏳ 賽事結束後公佈...</div>
+      <div class="champ-date">四人並列 3/4，恭喜！</div>
     </div>
   </div>
   <div class="champ-names">
-    <span style="font-size:13px;color:#a07820;font-weight:700">待公佈</span>
+    <span class="champ-chip">👑 Harlem</span>
+    <span class="champ-chip">👑 Jim</span>
+    <span class="champ-chip">👑 TRZ</span>
+    <span class="champ-chip">👑 抽筋</span>
+  </div>
+  <div class="champ-runners">
+    <span style="font-size:11px;color:#a07820;font-weight:700;width:100%;margin-bottom:4px">2/4 亞軍：</span>
+    <span class="runner-chip">🥈 CurryEason</span>
+    <span class="runner-chip">🥈 Hsu Kevin PoNeng</span>
+    <span class="runner-chip">🥈 Ian</span>
+    <span class="runner-chip">🥈 Louie</span>
+    <span class="runner-chip">🥈 t-s-y</span>
+    <span class="runner-chip">🥈 成大賭神</span>
+    <span class="runner-chip">🥈 新北中和大肥豬</span>
+    <span class="runner-chip">🥈 歐宏麟</span>
+    <span class="runner-chip">🥈 附中彭于晏</span>
   </div>
 </div>
 
@@ -452,9 +467,9 @@ window.deleteMe = async function(){
 // ── 排行榜渲染 ────────────────────────────────────────
 const SYM=['🥇','🥈','🥉'],CLS=['g','s','b'];
 const MATCH_NAMES=['活塞/魔術','雷霆/太陽','灰狼/金塊'];
-// ── 昨日 4/27 冠亞軍（賽後更新） ──
-const PREV_CHAMPS  = [];   // 例：['Masky']
-const PREV_RUNNERS = [];   // 例：['CurryEason','Mn','抽筋']
+// ── 昨日 4/27 冠亞軍 ──
+const PREV_CHAMPS  = ['Harlem','Jim','TRZ','抽筋'];
+const PREV_RUNNERS = ['CurryEason','Hsu Kevin PoNeng','Ian','Louie','t-s-y','成大賭神','新北中和大肥豬','歐宏麟','附中彭于晏'];
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
