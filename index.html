@@ -447,6 +447,35 @@ function lockAll(){
   });
 }
 
+// ── 名字輸入→自動恢復 UI ──────────────────────────────
+document.getElementById('pname').addEventListener('input', function(){
+  const typed = this.value.trim();
+  if(!typed || !latestDB.length) return;
+  const me = latestDB.find(e => e.name.toLowerCase() === typed.toLowerCase());
+  if(me){
+    myName = typed;
+    hasSubmitted = true;
+    myModified = me.modified === true;
+    // 恢復投票選擇
+    const allMatches = SECTIONS.flatMap(s => s.matches);
+    me.votes.forEach((v, i) => {
+      if(!v) return;
+      votes[i] = v;
+      const card = document.querySelector(`.card[data-i="${i}"]`);
+      if(!card) return;
+      const [btnL, btnR] = card.querySelectorAll('.vbtn');
+      btnL.classList.remove('sel-l','sel-r');
+      btnR.classList.remove('sel-l','sel-r');
+      const m = allMatches.find(x => x.id === i);
+      if(m && v === m.teamA.name) btnL.classList.add('sel-l');
+      else btnR.classList.add('sel-r');
+    });
+    document.getElementById('subbtn').disabled = true;
+    document.getElementById('poster-link').style.display = 'block';
+    showModifyUI();
+  }
+});
+
 // ── 投票 ──────────────────────────────────────────────
 window.pick = function(idx, team, side, btn){
   if(locked) return;
