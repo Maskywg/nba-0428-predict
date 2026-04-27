@@ -447,33 +447,38 @@ function lockAll(){
   });
 }
 
-// ── 名字輸入→自動恢復 UI ──────────────────────────────
+// ── 共用：根據名字 + DB 恢復 UI 狀態 ────────────────────
+function restoreMyStatus(nameToCheck){
+  if(!nameToCheck || !latestDB.length) return;
+  const me = latestDB.find(e => e.name.toLowerCase() === nameToCheck.toLowerCase());
+  if(!me) return;
+  // 只在未進入修改模式時才恢復（避免打斷進行中的修改）
+  if(modifyMode) return;
+  myName = nameToCheck;
+  hasSubmitted = true;
+  myModified = me.modified === true;
+  // 恢復投票選擇
+  const allMatches = SECTIONS.flatMap(s => s.matches);
+  me.votes.forEach((v, i) => {
+    if(!v) return;
+    votes[i] = v;
+    const card = document.querySelector(`.card[data-i="${i}"]`);
+    if(!card) return;
+    const [btnL, btnR] = card.querySelectorAll('.vbtn');
+    btnL.classList.remove('sel-l','sel-r');
+    btnR.classList.remove('sel-l','sel-r');
+    const m = allMatches.find(x => x.id === i);
+    if(m && v === m.teamA.name) btnL.classList.add('sel-l');
+    else btnR.classList.add('sel-r');
+  });
+  document.getElementById('subbtn').disabled = true;
+  document.getElementById('poster-link').style.display = 'block';
+  showModifyUI();
+}
+
+// 輸入名字時即時檢查
 document.getElementById('pname').addEventListener('input', function(){
-  const typed = this.value.trim();
-  if(!typed || !latestDB.length) return;
-  const me = latestDB.find(e => e.name.toLowerCase() === typed.toLowerCase());
-  if(me){
-    myName = typed;
-    hasSubmitted = true;
-    myModified = me.modified === true;
-    // 恢復投票選擇
-    const allMatches = SECTIONS.flatMap(s => s.matches);
-    me.votes.forEach((v, i) => {
-      if(!v) return;
-      votes[i] = v;
-      const card = document.querySelector(`.card[data-i="${i}"]`);
-      if(!card) return;
-      const [btnL, btnR] = card.querySelectorAll('.vbtn');
-      btnL.classList.remove('sel-l','sel-r');
-      btnR.classList.remove('sel-l','sel-r');
-      const m = allMatches.find(x => x.id === i);
-      if(m && v === m.teamA.name) btnL.classList.add('sel-l');
-      else btnR.classList.add('sel-r');
-    });
-    document.getElementById('subbtn').disabled = true;
-    document.getElementById('poster-link').style.display = 'block';
-    showModifyUI();
-  }
+  restoreMyStatus(this.value.trim());
 });
 
 // ── 投票 ──────────────────────────────────────────────
@@ -618,19 +623,10 @@ function renderLB(){
 
 // ── 即時監聽 ──────────────────────────────────────────
 onSnapshot(query(colRef,orderBy('time')),(snap)=>{
-  latestDB=snap.docs.map(d=>d.data());
-  // 偵測當前用戶的 modified 狀態
-  if(myName){
-    const me = latestDB.find(e=>e.name.toLowerCase()===myName.toLowerCase());
-    if(me){
-      hasSubmitted = true;
-      myModified = me.modified === true;
-      // 恢復已提交者的 UI 狀態
-      document.getElementById('subbtn').disabled = true;
-      document.getElementById('poster-link').style.display = 'block';
-      showModifyUI();
-    }
-  }
+  latestDB = snap.docs.map(d=>d.data());
+  // 用名字框裡的值或已知 myName 都可以觸發恢復
+  const nameToCheck = myName || document.getElementById('pname').value.trim();
+  restoreMyStatus(nameToCheck);
   renderLB();
 });
 onSnapshot(resultsRef,(snap)=>{
